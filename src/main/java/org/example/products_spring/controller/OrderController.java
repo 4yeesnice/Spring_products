@@ -25,7 +25,7 @@ public class OrderController {
     private final Logger logger = Logger.getLogger(OrderController.class.getName());
 
     @PostMapping("/save")
-    public ResponseEntity<?> createOrder(@RequestBody OrderSave order) {
+    public ResponseEntity<?> createOrder(@RequestBody Order order) {
         try {
             logger.info("Creating order: " + order);
             orderService.createOrder(order);
@@ -42,14 +42,10 @@ public class OrderController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateOrder(@RequestParam(value = "id") int id, @RequestBody OrderSave order) {
-        try {
-            logger.info("Updating order with id " + id);
-            orderService.updateOrder(id, order);
+    public ResponseEntity<?> updateOrder(@RequestBody Order order, @RequestParam(value = "id") int id) {
+            logger.info("Updating order with id " + order.getOrderId());
+            orderService.updateOrder(order, id);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Order updated successfully");
-        } catch (ExceptionCreate e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
     }
 
     @DeleteMapping("/delete")

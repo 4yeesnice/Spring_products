@@ -1,7 +1,8 @@
 package org.example.products_spring.service;
 
 
-import org.example.products_spring.dao.ProductDao;
+import lombok.AllArgsConstructor;
+import org.example.products_spring.dao.ProductRepository;
 import org.example.products_spring.exception.ExceptionCreate;
 import org.example.products_spring.exception.NotFoundByIDException;
 import org.example.products_spring.model_save.ProductSave;
@@ -13,75 +14,45 @@ import java.util.logging.Logger;
 
 
 @Service
+@AllArgsConstructor
 public class ProductService {
 
-    private ProductDao productDao;
+    private final ProductRepository productRepository;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 
-    public void createProduct(ProductSave productSave){
-        Product product = new Product();
-        product.setProductName(productSave.getProductName());
-        product.setDescription(productSave.getDescription());
-        product.setPrice(productSave.getPrice());
-        try {
-            boolean result = productDao.create(product);
-            if (!result){
-                throw new ExceptionCreate("product");
-            }
-            logger.info("Product created successfully");
-        }catch (ExceptionCreate ex){
-            ex.getMessage();
-        }
+    public void createProduct(Product product){
+        logger.info("Creating product with id: " + product.getProductId());
+        productRepository.save(product);
+        logger.info("Product created");
     }
 
-    public Product getById(int id) throws NotFoundByIDException{
-        // Обработка исключения где ID не существует
-        try {
-            Product product = productDao.getById(id);
-            if (product==null){
-                throw new NotFoundByIDException("product", id);
-            }
-            return product;
-        }catch (NotFoundByIDException ex){
-            logger.info(ex.getMessage());
-        }
-        return null;
+    public Product getById(int id){
+        logger.info("Retrieving product with id: " + id);
+        return productRepository.findById(id).get();
     }
 
 
 
-    public Product updateProduct(ProductSave productSave, int id) throws NotFoundByIDException{
-        try {
-            Product product = productDao.getById(id);
-            if (product==null){
-                throw new NotFoundByIDException("product", id);
-            }
-            product.setProductName(productSave.getProductName());
-            product.setDescription(productSave.getDescription());
-            product.setPrice(productSave.getPrice());
-            productDao.updateProduct(product);
-            return product;
-        }catch (NotFoundByIDException ex){
-            logger.info(ex.getMessage());
-        }
-        return null;
+    public void updateProduct(Product product, int id){
+        logger.info("Updating product with id: " + id);
+        Product productToSave = productRepository.findById(id).get();
+        productToSave.setProductName(product.getProductName());
+        productToSave.setDescription(product.getDescription());
+        productToSave.setPrice(product.getPrice());
+        productRepository.save(productToSave);
     }
 
     @toCheckProduct
     public void deleteProduct(int id){
-        // Обработка исключения где ID не существует
-        try {
-            productDao.deleteProduct(id);
-        }catch (NotFoundByIDException ex){
-            logger.info(ex.getMessage());
-        }
+        logger.info("Deleting product with id: " + id);
+       productRepository.deleteById(id);
 
     }
 
 
     public List<Product> getAll(){
-        return productDao.getAll();
+        return productRepository.findAll();
     }
 
 

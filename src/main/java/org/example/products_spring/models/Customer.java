@@ -1,7 +1,9 @@
 package org.example.products_spring.models;
 
 
+import jakarta.persistence.*;
 
+@Entity
 public class Customer {
 
     public int getCustomerId() {
@@ -28,7 +30,12 @@ public class Customer {
         this.contactInfo = contactInfo;
     }
 
+    @Id
+    @GeneratedValue
+    @Column(name = "customer_id")
     private int customerId;
+    @Column(name = "customer_name")
     private String customerName;
+    @Column(name = "contact_info")
     private String contactInfo;
 }

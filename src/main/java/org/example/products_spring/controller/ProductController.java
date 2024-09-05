@@ -23,7 +23,7 @@ public class ProductController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveProduct(@RequestBody ProductSave product) {
+    public ResponseEntity<?> saveProduct(@RequestBody Product product) {
         logger.info("Saving product " + product);
         productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body("Product with name" + product.getProductName() +
@@ -38,26 +38,18 @@ public class ProductController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateProduct(@RequestParam(value = "id", required = true) int id, @RequestBody ProductSave product) {
-        try {
-            logger.info("Updating product with id" + id);
-            Product product1 = productService.updateProduct(product, id);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(product1);
-        }catch (NotFoundByIDException e) {
-            logger.warning("Product with id" + id + " not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<?> updateProduct(@RequestBody Product product, @RequestParam(name = "id") int id) {
+            logger.info("Updating product with id" + product.getProductId());
+            productService.updateProduct(product, id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Product with id " + product.getProductId() + " updated successfully");
     }
 
     @GetMapping("/get")
     public ResponseEntity<?> getById(@RequestParam(value = "id", required = true) int id) {
-        try {
-            logger.info("Getting product with id " + id);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(productService.getById(id));
-        }catch (NotFoundByIDException e) {
-            logger.warning("Product with id" + id + " not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+
+        logger.info("Getting product with id " + id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(productService.getById(id));
+
 
     }
 

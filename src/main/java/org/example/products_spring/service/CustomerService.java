@@ -2,11 +2,12 @@ package org.example.products_spring.service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
 import lombok.AllArgsConstructor;
-import org.example.products_spring.dao.CustomerDao;
+import org.example.products_spring.dao.CustomerRepository;
 import org.example.products_spring.exception.ExceptionCreate;
 import org.example.products_spring.exception.NotFoundByIDException;
 import org.example.products_spring.model_save.Customer_save;
@@ -15,68 +16,36 @@ import org.springframework.stereotype.Service;
 import org.example.products_spring.aspects.annotation.toCheck;
 
 @Service
+@AllArgsConstructor
 public class CustomerService {
 
     private final Logger logger = Logger.getLogger(CustomerService.class.getName());
-    private CustomerDao customerDao;
+    private final CustomerRepository customerRepository;
 
-    public void saveCustomer(Customer_save Customer_save) throws ExceptionCreate{
-        Customer customer = new Customer();
-        customer.setCustomerName(Customer_save.getCustomerName());
-        customer.setContactInfo(Customer_save.getContactInfo());
-        // Проверка создался ли обьект
-        boolean result = customerDao.create(customer);
-
+    public void saveCustomer(Customer customer) throws ExceptionCreate{
+        customerRepository.save(customer);
     }
 
     public Customer getById(int id){
-        // Обработка исключения где ID не существует
-        try {
-            Customer customer = customerDao.getById(id);
-            if (customer==null){
-                throw new NotFoundByIDException("customer", id);
-            }
-            return customer;
-        }catch (NotFoundByIDException ex){
-            logger.info(ex.getMessage());
-        }
-
-        return null;
+        return customerRepository.findById(id).get();
     }
 
-    public void updateCustomer(Customer_save customer_save, int id){
-
-        // Обработка исключения где ID не существует
-        try {
-            Customer customer = customerDao.getById(id);
-            if (customer==null){
-                throw new NotFoundByIDException("customer", id);
-            }
-            customer.setCustomerName(customer_save.getCustomerName());
-            customer.setContactInfo(customer_save.getContactInfo());
-            customerDao.updateCustomer(customer);
-            logger.info("Customer updated!");
-        } catch (NotFoundByIDException e) {
-            System.out.println(e.getMessage());
-        }
+    public void updateCustomer(Customer customer, int id){
+        Customer customerToUpdate = customerRepository.findById(id).get();
+        customerToUpdate.setCustomerName(customer.getCustomerName());
+        customerToUpdate.setContactInfo(customer.getContactInfo());
+        customerRepository.save(customerToUpdate);
     }
 
     @toCheck
     public void deleteCustomerById(int id){
-        // Обработка исключения где ID не существует
-        try {
-            logger.info("Delete customer by id: " + id);
-            customerDao.deleteCustomer(id);
-            logger.info("Customer with id: " + id + "deleted");
-        } catch (NotFoundByIDException e) {
-            System.out.println(e.getMessage());
-        }
+        customerRepository.deleteById(id);
     }
 
 
     // Метод выводит всех пользователей
     public List<Customer> getAll(){
-        return customerDao.getAll();
+        return customerRepository.findAll();
     }
 
 }

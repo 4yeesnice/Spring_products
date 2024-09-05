@@ -1,36 +1,25 @@
 package org.example.products_spring.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+
+@Entity
+@AllArgsConstructor
 public class Product {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "product_id")
     private int productId;
+    @Column(name = "product_name")
     private String productName;
     private String description;
     private double price;
 
-    public Product(int productId, String productName, String description, double price) {
-        this.productId = productId;
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-    }
-
     public Product() {
-
-    }
-
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
     }
 
     public String getDescription() {
@@ -47,5 +36,21 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }

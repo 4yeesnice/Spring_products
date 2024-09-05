@@ -2,7 +2,6 @@ package org.example.products_spring.controller;
 
 
 import lombok.AllArgsConstructor;
-import org.example.products_spring.dao.CustomerDao;
 import org.example.products_spring.exception.ExceptionCreate;
 import org.example.products_spring.model_save.Customer_save;
 import org.example.products_spring.models.Customer;
@@ -24,12 +23,11 @@ public class CustomerController {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveCustomer(@RequestBody Customer_save customer){
+    public ResponseEntity<?> saveCustomer(@RequestBody Customer customer){
         try{
             customerService.saveCustomer(customer);
             logger.info("Customer saved successfully");
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Customer saved successfully");
-
         } catch(ExceptionCreate e){
             System.out.println("ExceptionCreate");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -38,7 +36,7 @@ public class CustomerController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateCustomer(@RequestBody Customer_save customer, @RequestParam(value = "id", required = true) int id){
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer, @RequestParam(value = "id", required = true) int id){
         logger.info("Customer updated successfully");
         customerService.updateCustomer(customer, id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -51,7 +49,7 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping("get_by_id")
+    @GetMapping("/get_by_id")
     public ResponseEntity<Customer> getCustomerById(@RequestParam(value = "id", required = true) int id){
         logger.info("Customer retrieved successfully");
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(customerService.getById(id));
